@@ -1001,7 +1001,7 @@ function renderApprovalHtml({ success, order, alreadyApproved, title, message })
 }
 
 // Helper: Send Discord Webhook Notification on Order
-async function sendDiscordOrderNotification(order, item, siteConfig, isApproved = false) {
+async function sendDiscordOrderNotification(order, item, siteConfig, isApproved = false, req = null) {
   const webhookUrl = siteConfig?.discordWebhookUrl || process.env.DISCORD_WEBHOOK_URL;
   if (!webhookUrl || typeof webhookUrl !== 'string' || !webhookUrl.startsWith('http')) return;
 
@@ -1013,10 +1013,18 @@ async function sendDiscordOrderNotification(order, item, siteConfig, isApproved 
     
     const embedColor = isCompleted ? 0x10b981 : 0x8b5cf6; // Emerald green or Violet
 
-    const defaultBaseUrl = `http://localhost:${PORT}`;
-    const baseUrl = (siteConfig?.publicUrl && siteConfig.publicUrl.trim().startsWith('http')) 
-      ? siteConfig.publicUrl.trim().replace(/\/$/, '') 
-      : defaultBaseUrl;
+    let baseUrl = '';
+    if (req) {
+      const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const host = req.headers['x-forwarded-host'] || req.get('host');
+      if (host) baseUrl = `${proto}://${host}`.replace(/\/$/, '');
+    }
+    if (!baseUrl && siteConfig?.publicUrl && siteConfig.publicUrl.trim().startsWith('http')) {
+      baseUrl = siteConfig.publicUrl.trim().replace(/\/$/, '');
+    }
+    if (!baseUrl) {
+      baseUrl = `http://localhost:${PORT}`;
+    }
     const approveUrl = `${baseUrl}/api/orders/${encodeURIComponent(order.orderId)}/quick-approve`;
     const ordersUrl = `${baseUrl}/#orders`;
 
@@ -1039,8 +1047,8 @@ async function sendDiscordOrderNotification(order, item, siteConfig, isApproved 
 
     if (!isCompleted) {
       fields.push({
-        name: '⚡ ยืนยันคำสั่งซื้อได้ทันที (คลิกเดียว)',
-        value: `👉 [**✅ กดยืนยันออเดอร์นี้ทันที (1-Click Approve)**](${approveUrl})\n👉 [**🔍 ตรวจดูสลิป & จัดการบนเว็บ**](${ordersUrl})`,
+        name: '⚡ ลิงก์กดยืนยันออเดอร์ทันที (คลิกเพื่ออนุมัติ):',
+        value: `✅ **กดที่นี่เพื่ออนุมัติ:**\n${approveUrl}\n\n🔍 **ดูสลิปและจัดการบนเว็บ:**\n${ordersUrl}`,
         inline: false
       });
     }
@@ -1285,7 +1293,7 @@ app.post('/api/order', upload.single('slipFile'), async (req, res) => {
   saveData(data);
 
   // Send Discord notification asynchronously
-  sendDiscordOrderNotification(newOrder, item, siteConfig);
+  sendDiscordOrderNotification(newOrder, item, siteConfig, false, req);
 
   res.json({
     success: true,
@@ -1364,7 +1372,7 @@ app.post('/api/orders/:orderId/approve', (req, res) => {
 
   // Send Discord notification on approval
   const siteConfig = data.siteConfig || {};
-  sendDiscordOrderNotification(order, approvedItem, siteConfig, true);
+  sendDiscordOrderNotification(order, approvedItem, siteConfig, true, req);
 
   res.json({ success: true, message: 'อนุมัติคำสั่งซื้อเรียบร้อยแล้ว', order });
 });
@@ -1402,7 +1410,7 @@ app.get('/api/orders/:orderId/quick-approve', (req, res) => {
 
     // Send follow-up confirmation to Discord
     const siteConfig = data.siteConfig || {};
-    sendDiscordOrderNotification(order, approvedItem, siteConfig, true);
+    sendDiscordOrderNotification(order, approvedItem, siteConfig, true, req);
   }
 
   res.send(renderApprovalHtml({

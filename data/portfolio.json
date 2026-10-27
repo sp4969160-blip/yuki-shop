@@ -108,7 +108,7 @@
       "isPremade": true,
       "hasCustomSkin": true,
       "licenseType": "exclusive",
-      "status": "available",
+      "status": "sold",
       "modelType": "slim",
       "premadeCode": "#SKIN-01",
       "resolution": "512x512 Ultra HD",
@@ -129,7 +129,8 @@
       "description": "",
       "tags": [],
       "createdAt": "2026-10-27T11:12:11.288Z",
-      "updatedAt": "2026-10-27T11:31:03.150Z"
+      "updatedAt": "2026-10-27T11:31:03.150Z",
+      "soldAt": "2026-10-27T16:25:14.822Z"
     },
     {
       "id": "item-1792946019228",
@@ -694,7 +695,30 @@
       "content": "ตอนนี้ทางร้านมีโซนสกินสำเร็จรูปให้เลือกซื้อแล้วนะคะ สั่งซื้อแล้วรับไฟล์สกินลงเล่นในมายคราฟได้ทันที ไม่ต้องรอคิวคอมมิชชัน!"
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "orderId": "ORD-1793117294124",
+      "itemId": "premade-1793099531288",
+      "itemTitle": "Skin 512 px",
+      "itemCode": "#SKIN-01",
+      "price": "1",
+      "licenseType": "exclusive",
+      "buyerName": "Yuki Haru",
+      "buyerContact": "Yuki Haru",
+      "paymentMethod": "promptpay",
+      "slipUrl": "",
+      "transRef": "APF261027230709058FN769S0",
+      "bankCode": "025",
+      "bankName": "ธนาคารกรุงศรีอยุธยา (BAY)",
+      "slipVerified": true,
+      "status": "completed",
+      "itemImage": "/uploads/work-1792843098829-627203810.png",
+      "skinUrl": "/uploads/work-1792843098829-627203810.png",
+      "createdAt": "2026-10-27T16:08:00.000Z",
+      "approvedAt": "2026-10-27T16:25:14.822Z",
+      "approvedVia": "discord-quick-approve"
+    }
+  ],
   "pricingTable": {
     "title": "ราคาทุกขนาดอยู่ตรงนี้ เลือกได้เลย ✦",
     "subtitle": "Yuki Haru • Snow Butterfly",
