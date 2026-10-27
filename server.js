@@ -1602,7 +1602,7 @@ app.get('/api/promptpay-qr', async (req, res) => {
     res.json({
       success: true,
       target,
-      name: 'SODARAT BRAK SUBCHHOK',
+      name: 'SAVUN THOEUN',
       amount: cleanAmount,
       payload,
       qrDataUrl
