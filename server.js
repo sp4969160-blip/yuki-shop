@@ -1268,6 +1268,7 @@ app.post('/api/order', upload.single('slipFile'), async (req, res) => {
     slipQrRaw: slipQrRaw || '',
     status: orderStatus, // 'completed' or 'pending'
     notes: notes || '',
+    itemImage: item.image || item.skinTexture || '',
     skinUrl: item.skinTexture || item.image || '/uploads/custom-yuki-skin.png',
     createdAt: new Date().toISOString()
   };
@@ -1306,9 +1307,37 @@ app.get('/api/order-status/:orderId', (req, res) => {
   res.json({
     orderId: order.orderId,
     status: order.status || 'completed',
-    skinUrl: order.skinUrl,
-    itemTitle: order.itemTitle
+    skinUrl: (order.status === 'completed') ? order.skinUrl : null,
+    itemTitle: order.itemTitle,
+    itemImage: order.itemImage || order.skinUrl || null,
+    price: order.price,
+    createdAt: order.createdAt
   });
+});
+
+// API: Customer order lookup by Discord handle or Order ID
+app.get('/api/customer-orders', (req, res) => {
+  const data = readData();
+  const q = String(req.query.q || '').trim().toLowerCase();
+  if (!q) return res.json({ orders: [] });
+
+  const orders = (data.orders || [])
+    .filter(o => 
+      (o.orderId && o.orderId.toLowerCase().includes(q)) ||
+      (o.buyerContact && o.buyerContact.toLowerCase().includes(q))
+    )
+    .map(o => ({
+      orderId: o.orderId,
+      status: o.status || 'completed',
+      itemTitle: o.itemTitle,
+      price: o.price,
+      createdAt: o.createdAt,
+      skinUrl: (o.status === 'completed') ? o.skinUrl : null,
+      buyerContact: o.buyerContact,
+      itemImage: o.itemImage || o.skinUrl || null
+    }));
+
+  res.json({ orders });
 });
 
 // API: Approve order (Admin)

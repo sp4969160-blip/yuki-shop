@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   renderAll();
   loadAdminOrders(true);
+  updateCustomerOrdersBadge();
   startLivePurchaseTicker();
   lucide.createIcons();
 });
@@ -6962,6 +6963,9 @@ function handleCheckoutPending(data, item) {
   const orderIdEl = document.getElementById('checkoutPendingOrderId');
   if (orderIdEl) orderIdEl.textContent = '#' + (data.order && data.order.orderId ? data.order.orderId : '');
 
+  // Save to customer local purchase history
+  saveCustomerOrderLocal(data.order, item, 'pending');
+
   // Refresh admin badge
   loadAdminOrders(true);
 
@@ -7090,6 +7094,9 @@ function handleCheckoutSuccess(data, item) {
   const orderIdEl = document.getElementById('checkoutSuccessOrderId');
   if (orderIdEl) orderIdEl.textContent = '#' + orderId;
 
+  // Save to customer local purchase history
+  saveCustomerOrderLocal(data.order || { orderId, skinUrl }, item, 'completed');
+
   const dlBtn = document.getElementById('checkoutDownloadBtn');
   if (dlBtn) {
     dlBtn.href = skinUrl;
@@ -7125,6 +7132,289 @@ function handleCheckoutSuccess(data, item) {
   showToast('🎉 ชำระเงินสำเร็จแล้ว! ดาวน์โหลดสกินได้เลยนะคะ ♡');
   loadAdminOrders(true);
   lucide.createIcons();
+}
+
+// ==================== CUSTOMER PURCHASE HISTORY MODULE ====================
+function getCustomerOrdersLocal() {
+  try {
+    const raw = localStorage.getItem('yuki_customer_orders');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomerOrderLocal(order, item, overrideStatus) {
+  if (!order || !order.orderId) return;
+  try {
+    const orders = getCustomerOrdersLocal();
+    const existingIdx = orders.findIndex(o => o.orderId === order.orderId);
+    const orderData = {
+      orderId: order.orderId,
+      itemId: item ? item.id : (order.itemId || ''),
+      itemTitle: item ? item.title : (order.itemTitle || 'สกินสำเร็จรูป'),
+      itemImage: item ? (item.image || item.skinTexture || '') : (order.itemImage || ''),
+      price: item ? (item.price || item.priceFull || '250฿') : (order.price || ''),
+      status: overrideStatus || order.status || 'pending',
+      skinUrl: order.skinUrl || (overrideStatus === 'completed' && item ? (item.skinTexture || item.image) : null),
+      buyerContact: order.buyerContact || '',
+      date: order.createdAt || new Date().toISOString()
+    };
+
+    if (existingIdx >= 0) {
+      orders[existingIdx] = { ...orders[existingIdx], ...orderData };
+    } else {
+      orders.unshift(orderData);
+    }
+    localStorage.setItem('yuki_customer_orders', JSON.stringify(orders));
+    updateCustomerOrdersBadge();
+  } catch (e) {
+    console.warn('Failed to save customer order local', e);
+  }
+}
+
+function updateCustomerOrdersBadge() {
+  const badge = document.getElementById('customerOrdersBadge');
+  if (!badge) return;
+  const orders = getCustomerOrdersLocal();
+  if (orders.length > 0) {
+    badge.textContent = orders.length;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+async function openCustomerOrdersModal() {
+  const modal = document.getElementById('customerOrdersModal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  await refreshCustomerOrders(false);
+}
+
+function closeCustomerOrdersModal() {
+  const modal = document.getElementById('customerOrdersModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+async function refreshCustomerOrders(isUserClick = false) {
+  const orders = getCustomerOrdersLocal();
+  const listContainer = document.getElementById('customerOrdersList');
+
+  if (isUserClick) {
+    showToast('กำลังตรวจสอบสถานะคำสั่งซื้อล่าสุด... 🔄');
+  }
+
+  // Poll server for any pending orders to see if admin approved
+  let hasUpdates = false;
+  for (let i = 0; i < orders.length; i++) {
+    if (orders[i].status === 'pending') {
+      try {
+        const res = await fetch(`/api/order-status/${encodeURIComponent(orders[i].orderId)}?t=` + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status && data.status !== 'pending') {
+            orders[i].status = data.status;
+            if (data.skinUrl) orders[i].skinUrl = data.skinUrl;
+            hasUpdates = true;
+          }
+        }
+      } catch (err) {
+        console.warn('Check order status error', err);
+      }
+    }
+  }
+
+  if (hasUpdates) {
+    try {
+      localStorage.setItem('yuki_customer_orders', JSON.stringify(orders));
+      updateCustomerOrdersBadge();
+    } catch (e) {}
+    if (isUserClick) {
+      showToast('🎉 มีคำสั่งซื้อได้รับการอนุมัติแล้ว! ดาวน์โหลดสกินได้เลยค่ะ');
+    }
+  } else if (isUserClick) {
+    showToast('ข้อมูลคำสั่งซื้ออัปเดตล่าสุดแล้วค่ะ ✨');
+  }
+
+  renderCustomerOrders(orders);
+}
+
+function renderCustomerOrders(orders) {
+  const container = document.getElementById('customerOrdersList');
+  if (!container) return;
+
+  if (!orders || orders.length === 0) {
+    container.innerHTML = `
+      <div class="py-12 px-4 text-center rounded-2xl bg-purple-50/50 border border-purple-200/60 space-y-2">
+        <div class="text-3xl">🛍️</div>
+        <div class="text-xs font-bold text-purple-950">ยังไม่มีประวัติการซื้อในอุปกรณ์นี้</div>
+        <p class="text-[11px] text-purple-500 max-w-xs mx-auto">
+          เมื่อคุณสั่งซื้อสกินสำเร็จรูป คำสั่งซื้อจะปรากฏที่นี่โดยอัตโนมัติ เพื่อให้กลับมาดาวน์โหลดไฟล์สกินได้ตลอดเวลาค่ะ ♡
+        </p>
+      </div>
+    `;
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = orders.map(ord => {
+    const isCompleted = ord.status === 'completed';
+    const isPending = ord.status === 'pending';
+    const isRejected = ord.status === 'rejected';
+
+    const thaiDate = ord.date ? new Date(ord.date).toLocaleString('th-TH', { 
+      day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' 
+    }) : '';
+
+    return `
+      <div class="p-3.5 rounded-2xl bg-white border ${isCompleted ? 'border-emerald-300 shadow-sm' : isPending ? 'border-amber-300 bg-amber-50/30' : 'border-rose-200'} transition flex flex-col gap-2.5">
+        
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200/80 p-1 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+              <img src="${escapeHtml(ord.itemImage || ord.skinUrl || 'uploads/custom-yuki-skin.png')}" alt="skin preview" class="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h4 class="text-xs sm:text-sm font-bold text-purple-950 leading-tight">${escapeHtml(ord.itemTitle || 'สกินมายคราฟ')}</h4>
+              <div class="flex items-center gap-2 mt-0.5 text-[10px] text-purple-500 font-mono">
+                <span>#${escapeHtml(ord.orderId)}</span>
+                <span>•</span>
+                <span>${escapeHtml(thaiDate)}</span>
+              </div>
+              <div class="text-[11px] font-black text-purple-800 mt-0.5">
+                ${escapeHtml(ord.price || '')}
+              </div>
+            </div>
+          </div>
+
+          <div class="shrink-0 text-right">
+            ${isCompleted ? `
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-2xs">
+                <span>✅</span><span>อนุมัติแล้ว</span>
+              </span>
+            ` : isPending ? `
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-300 shadow-2xs animate-pulse">
+                <span>⏳</span><span>รอแอดมินยืนยัน</span>
+              </span>
+            ` : `
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800 border border-rose-300 shadow-2xs">
+                <span>❌</span><span>ไม่อนุมัติ</span>
+              </span>
+            `}
+          </div>
+        </div>
+
+        <!-- Action / Status Description -->
+        <div class="pt-2 border-t border-purple-100/80 flex items-center justify-between gap-2 flex-wrap">
+          ${isCompleted ? `
+            <div class="text-[10px] text-emerald-700 font-medium flex items-center gap-1">
+              <span>✨</span><span>ไฟล์สกินพร้อมใช้งานแล้ว โหลดลงเกมได้ทันทีค่ะ</span>
+            </div>
+            <div class="flex items-center gap-2 ml-auto">
+              <a 
+                href="${escapeHtml(ord.skinUrl || 'uploads/custom-yuki-skin.png')}" 
+                download="[YukiShop]-${escapeHtml((ord.itemTitle || 'skin').replace(/\s+/g, '_'))}.png"
+                class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>📥</span>
+                <span>ดาวน์โหลดไฟล์สกิน (.PNG)</span>
+              </a>
+            </div>
+          ` : isPending ? `
+            <div class="text-[10px] text-amber-700 flex items-center gap-1">
+              <span>🔄</span><span>สลิปส่งเข้า Discord แอดมินแล้ว กำลังรอตรวจสอบยอดเงิน...</span>
+            </div>
+            <button 
+              type="button" 
+              onclick="checkSingleCustomerOrder('${ord.orderId}')"
+              class="px-3 py-1 rounded-xl text-[11px] font-bold text-purple-800 bg-purple-100 hover:bg-purple-200 border border-purple-200 transition ml-auto flex items-center gap-1 cursor-pointer"
+            >
+              <span>🔄</span>
+              <span>เช็คสถานะ</span>
+            </button>
+          ` : `
+            <div class="text-[10px] text-rose-600">
+              ยอดเงินในสลิปไม่ตรง หรือไม่พบยอดเงิน กรุณาติดต่อแอดมินทาง Discord
+            </div>
+          `}
+        </div>
+
+      </div>
+    `;
+  }).join('');
+
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+async function checkSingleCustomerOrder(orderId) {
+  try {
+    showToast('กำลังเช็คสถานะคำสั่งซื้อ #' + orderId + '... ⏳');
+    const res = await fetch(`/api/order-status/${encodeURIComponent(orderId)}?t=` + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      const orders = getCustomerOrdersLocal();
+      const target = orders.find(o => o.orderId === orderId);
+      if (target) {
+        target.status = data.status || target.status;
+        if (data.skinUrl) target.skinUrl = data.skinUrl;
+        localStorage.setItem('yuki_customer_orders', JSON.stringify(orders));
+        updateCustomerOrdersBadge();
+        renderCustomerOrders(orders);
+      }
+      if (data.status === 'completed') {
+        showToast('🎉 คำสั่งซื้อได้รับการอนุมัติแล้ว! กดดาวน์โหลดได้เลยค่ะ ♡');
+      } else if (data.status === 'rejected') {
+        showToast('❌ คำสั่งซื้อนี้ไม่ผ่านการอนุมัติ กรุณาติดต่อแอดมิน');
+      } else {
+        showToast('⏳ แอดมินกำลังตรวจสอบยอดเงิน โปรดรอสักครู่นะคะ');
+      }
+    }
+  } catch (e) {
+    showToast('เกิดข้อผิดพลาดในการตรวจสอบสถานะ');
+  }
+}
+
+async function searchCustomerOrdersServer() {
+  const input = document.getElementById('customerOrderSearchInput');
+  const query = (input ? input.value : '').trim();
+  if (!query) {
+    refreshCustomerOrders();
+    return;
+  }
+
+  showToast('กำลังค้นหาคำสั่งซื้อ: ' + query + '... 🔍');
+  try {
+    const res = await fetch('/api/customer-orders?q=' + encodeURIComponent(query));
+    if (res.ok) {
+      const data = await res.json();
+      const serverOrders = data.orders || [];
+      if (serverOrders.length === 0) {
+        showToast('ไม่พบคำสั่งซื้อที่ตรงกับ: ' + query);
+        renderCustomerOrders([]);
+        return;
+      }
+      
+      // Merge with local orders
+      const localOrders = getCustomerOrdersLocal();
+      serverOrders.forEach(so => {
+        const idx = localOrders.findIndex(lo => lo.orderId === so.orderId);
+        if (idx >= 0) {
+          localOrders[idx] = { ...localOrders[idx], ...so };
+        } else {
+          localOrders.unshift(so);
+        }
+      });
+      localStorage.setItem('yuki_customer_orders', JSON.stringify(localOrders));
+      updateCustomerOrdersBadge();
+      renderCustomerOrders(serverOrders);
+      showToast(`พบประวัติคำสั่งซื้อ ${serverOrders.length} รายการ! ✨`);
+    }
+  } catch (err) {
+    console.warn('Search customer orders error', err);
+    showToast('ไม่สามารถค้นหาได้ในขณะนี้');
+  }
 }
 
 // ==================== CELEBRATION CHIME & CONFETTI ====================

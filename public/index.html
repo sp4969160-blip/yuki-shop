@@ -68,6 +68,11 @@
           <i data-lucide="mail" class="w-3.5 h-3.5 text-purple-500"></i>
           <span>Contact</span>
         </button>
+        <button id="navMyOrdersBtn" onclick="openCustomerOrdersModal()" class="hover:text-purple-950 transition flex items-center gap-1.5 py-1 px-3 sm:px-3.5 rounded-full hover:bg-purple-100/60 text-purple-800 whitespace-nowrap shrink-0" title="ดูประวัติการซื้อและดาวน์โหลดสกินของคุณ">
+          <i data-lucide="receipt" class="w-3.5 h-3.5 text-purple-600"></i>
+          <span>ประวัติการซื้อ</span>
+          <span id="customerOrdersBadge" class="hidden text-[9px] bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black px-1.5 py-0.5 rounded-full leading-none shrink-0 shadow-2xs">0</span>
+        </button>
       </nav>
 
       <!-- Right Controls: Search bar + Snow Toggle + Admin Mode -->
@@ -2327,13 +2332,18 @@
           <p class="text-[11px] text-amber-800 leading-relaxed">
             ระบบได้สำรองสกินนี้ไว้ให้คุณเรียบร้อยแล้ว เมื่อแอดมินกดยืนยันยอดเงินในระบบ หน้าต่างนี้จะปลดล็อคปุ่มดาวน์โหลดไฟล์สกิน (.PNG) ให้ทันทีโดยไม่ต้องรีเฟรชหน้าเว็บค่ะ
           </p>
-          <div class="text-[10px] text-amber-700 bg-white/80 p-2.5 rounded-xl border border-amber-100 leading-relaxed">
-            💡 <strong>แนะนำ:</strong> เพื่อความรวดเร็ว สามารถส่งเลขออเดอร์แจ้งแอดมินทาง <a href="https://discord.gg/FyPfgC3Yj4" target="_blank" class="text-indigo-600 underline font-bold">Discord ร้าน</a> ได้เลยนะคะ ♡
+          <div class="text-[10px] text-amber-700 bg-white/80 p-2.5 rounded-xl border border-amber-100 leading-relaxed space-y-1">
+            <div>💡 <strong>ไม่ต้องกังวลหากเผลอปิดหน้าต่างนี้:</strong> คำสั่งซื้อถูกบันทึกไว้ในเมนู <strong>"ประวัติการซื้อ"</strong> เรียบร้อยแล้วค่ะ เมื่อแอดมินยืนยันยอดเงิน คุณสามารถเข้ามาดาวน์โหลดสกินได้ตลอดเวลา</div>
+            <div class="text-[9px] text-purple-600">หรือสามารถส่งเลขออเดอร์แจ้งแอดมินทาง <a href="https://discord.gg/FyPfgC3Yj4" target="_blank" class="text-indigo-600 underline font-bold">Discord ร้าน</a> เพื่อรับการอนุมัติเร็วยิ่งขึ้นได้เลยค่ะ ♡</div>
           </div>
         </div>
 
-        <div class="pt-2 flex justify-center gap-2">
-          <button type="button" onclick="closePremadeCheckoutModal()" class="px-5 py-2 rounded-full text-xs font-semibold text-purple-700 bg-purple-100 hover:bg-purple-200 transition">
+        <div class="pt-2 flex justify-center gap-2 flex-wrap">
+          <button type="button" onclick="closePremadeCheckoutModal(); openCustomerOrdersModal();" class="px-4 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 shadow-sm transition flex items-center gap-1.5">
+            <span>📋</span>
+            <span>ดูในประวัติการซื้อของฉัน</span>
+          </button>
+          <button type="button" onclick="closePremadeCheckoutModal()" class="px-4 py-2 rounded-full text-xs font-semibold text-purple-700 bg-purple-100 hover:bg-purple-200 transition">
             ปิดหน้าต่าง
           </button>
         </div>
@@ -3301,6 +3311,14 @@
           <span class="text-[9px] bg-rose-500 text-white font-bold px-2 py-0.5 rounded-full">ส่งทันที</span>
         </button>
 
+        <button onclick="openCustomerOrdersModal(); closeMobileDrawer();" class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-purple-100/70 text-left transition group">
+          <span class="flex items-center gap-2.5 text-xs font-bold text-purple-950">
+            <span class="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center text-sm">📦</span>
+            <span>ประวัติการซื้อของฉัน (My Orders)</span>
+          </span>
+          <span class="text-[9px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full">เซฟสกิน</span>
+        </button>
+
         <button onclick="openAboutModal(); closeMobileDrawer();" class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-purple-100/70 text-left transition group">
           <span class="flex items-center gap-2.5 text-xs font-bold text-purple-950">
             <span class="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center text-sm">ℹ️</span>
@@ -3331,7 +3349,70 @@
     </div>
   </div>
 
+  <!-- ==================== CUSTOMER ORDERS MODAL (ประวัติการซื้อสำหรับลูกค้า) ==================== -->
+  <div id="customerOrdersModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-overlay overflow-y-auto">
+    <div class="frosted-window bg-white/95 w-full max-w-lg rounded-3xl p-5 sm:p-6 border-2 border-purple-300 shadow-2xl relative my-auto max-h-[92vh] flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-purple-200">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-600 text-white flex items-center justify-center text-lg shadow-sm">
+            🛍️
+          </div>
+          <div>
+            <h3 class="text-base font-black text-purple-950 flex items-center gap-1.5">
+              <span>ประวัติการซื้อของฉัน</span>
+              <span class="text-[10px] bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full">My Orders</span>
+            </h3>
+            <p class="text-[11px] text-purple-600/80">ตรวจสอบสถานะและดาวน์โหลดไฟล์สกินที่คุณสั่งซื้อ</p>
+          </div>
+        </div>
+        <button onclick="closeCustomerOrdersModal()" class="w-8 h-8 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-700 flex items-center justify-center font-bold text-sm transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Search / Lookup Bar (เผื่อสั่งซื้อจากเครื่องอื่นหรือเคลียร์แคช) -->
+      <div class="pt-3 pb-2">
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1">
+            <input 
+              type="text" 
+              id="customerOrderSearchInput" 
+              placeholder="ค้นหาด้วยรหัสคำสั่งซื้อ (#ORD-...) หรือ Discord..." 
+              class="w-full pl-3.5 pr-8 py-2 rounded-xl bg-purple-50/80 border border-purple-200 text-xs text-purple-950 placeholder:text-purple-400 focus:outline-hidden focus:border-purple-400"
+              onkeyup="if(event.key==='Enter') searchCustomerOrdersServer();"
+            />
+            <button type="button" onclick="searchCustomerOrdersServer()" class="absolute right-2.5 top-2.5 text-purple-500 hover:text-purple-800">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <button type="button" onclick="refreshCustomerOrders(true)" class="p-2 rounded-xl border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 shadow-2xs transition flex items-center justify-center shrink-0" title="รีเฟรชตรวจสอบสถานะล่าสุด">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-purple-600"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders List Container -->
+      <div id="customerOrdersList" class="flex-1 overflow-y-auto space-y-3 pr-1 my-2 min-h-[220px] max-h-[58vh]">
+        <!-- Dynamically rendered by renderCustomerOrders() -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="pt-3 border-t border-purple-100 flex items-center justify-between text-[11px] text-purple-600 flex-wrap gap-2">
+        <span class="flex items-center gap-1">
+          <span>💬</span>
+          <span>มีปัญหาติดต่อ Discord: <strong class="text-purple-900">yuki_haru2204</strong></span>
+        </span>
+        <button type="button" onclick="closeCustomerOrdersModal()" class="px-4 py-1.5 rounded-full text-xs font-semibold text-purple-700 bg-purple-100 hover:bg-purple-200 transition">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- App Script -->
-  <script src="app.js?v=20261027_08"></script>
+  <script src="app.js?v=20261027_09"></script>
 </body>
 </html>
