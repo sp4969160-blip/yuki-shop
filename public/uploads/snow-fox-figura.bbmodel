@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "format_version": "4.5",
+    "model_format": "figura",
+    "box_uv": true
+  },
+  "name": "snow_fox_figura",
+  "geometry_name": "snow_fox",
+  "resolution": {
+    "width": 64,
+    "height": 64
+  },
+  "elements": [
+    {
+      "name": "fox_ear_left",
+      "box_uv": true,
+      "from": [2, 8, -1],
+      "to": [5, 12, 1],
+      "origin": [3, 8, 0],
+      "color": 0,
+      "faces": {
+        "north": {"uv": [0, 0, 3, 4], "texture": 0},
+        "east": {"uv": [0, 0, 2, 4], "texture": 0},
+        "south": {"uv": [0, 0, 3, 4], "texture": 0},
+        "west": {"uv": [0, 0, 2, 4], "texture": 0},
+        "up": {"uv": [0, 0, 3, 2], "texture": 0},
+        "down": {"uv": [0, 0, 3, 2], "texture": 0}
+      }
+    },
+    {
+      "name": "fox_ear_right",
+      "box_uv": true,
+      "from": [-5, 8, -1],
+      "to": [-2, 12, 1],
+      "origin": [-3, 8, 0],
+      "color": 0,
+      "faces": {
+        "north": {"uv": [0, 0, 3, 4], "texture": 0},
+        "east": {"uv": [0, 0, 2, 4], "texture": 0},
+        "south": {"uv": [0, 0, 3, 4], "texture": 0},
+        "west": {"uv": [0, 0, 2, 4], "texture": 0},
+        "up": {"uv": [0, 0, 3, 2], "texture": 0},
+        "down": {"uv": [0, 0, 3, 2], "texture": 0}
+      }
+    },
+    {
+      "name": "fox_tail",
+      "box_uv": true,
+      "from": [-2, -8, 2],
+      "to": [2, 0, 6],
+      "origin": [0, 0, 2],
+      "color": 0,
+      "faces": {
+        "north": {"uv": [0, 0, 4, 8], "texture": 0},
+        "east": {"uv": [0, 0, 4, 8], "texture": 0},
+        "south": {"uv": [0, 0, 4, 8], "texture": 0},
+        "west": {"uv": [0, 0, 4, 8], "texture": 0},
+        "up": {"uv": [0, 0, 4, 4], "texture": 0},
+        "down": {"uv": [0, 0, 4, 4], "texture": 0}
+      }
+    }
+  ],
+  "outliner": [
+    {
+      "name": "head",
+      "origin": [0, 0, 0],
+      "children": [0, 1]
+    },
+    {
+      "name": "body",
+      "origin": [0, 0, 0],
+      "children": [2]
+    }
+  ],
+  "animations": [
+    {
+      "name": "ear_wiggle",
+      "length": 1.5,
+      "loop": "loop"
+    },
+    {
+      "name": "tail_sway",
+      "length": 2.0,
+      "loop": "loop"
+    }
+  ]
+}

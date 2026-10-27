@@ -1,0 +1,654 @@
+/* ===================================================
+   Yuki Haru - Winter Lilac / Lavender Fairytale Theme
+   =================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Mali:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+:root {
+  --yuki-purple-dark: #372957;
+  --yuki-purple-primary: #634b95;
+  --yuki-purple-light: #8972be;
+  --yuki-lavender-glow: #b9a9e6;
+  --yuki-glass-bg: rgba(248, 245, 255, 0.85);
+  --yuki-glass-border: rgba(185, 172, 230, 0.6);
+  --yuki-glass-shadow: 0 10px 30px -5px rgba(99, 75, 149, 0.14);
+}
+
+.font-brand-script {
+  font-family: 'Alex Brush', cursive;
+}
+
+.font-japanese {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Prompt', 'Mali', 'Plus Jakarta Sans', sans-serif;
+  color: var(--yuki-purple-dark);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, #dce2f9 0%, #e6e0f8 40%, #dad2f5 75%, #cfd7f7 100%);
+}
+
+/* Background Atmosphere Scenery */
+.bg-scenery {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.65) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(210, 195, 250, 0.55) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(225, 215, 255, 0.55) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  transform: translateZ(0);
+}
+
+/* High-performance Snow Canvas */
+#snowCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  transform: translateZ(0);
+}
+
+/* Frosted Glass Capsule / Pill Navbar */
+.frosted-nav {
+  background: rgba(250, 247, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid var(--yuki-glass-border);
+  box-shadow: 0 6px 24px rgba(99, 75, 149, 0.1), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+  border-radius: 9999px;
+  transform: translateZ(0);
+}
+
+/* Frosted Glass Window / Card */
+.frosted-window {
+  background: var(--yuki-glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid var(--yuki-glass-border);
+  box-shadow: var(--yuki-glass-shadow), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  border-radius: 28px;
+  position: relative;
+  transform: translateZ(0);
+}
+
+/* Inner decorative frame */
+.inner-frame {
+  border: 1.5px solid rgba(168, 153, 222, 0.35);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 2px 5px rgba(137, 114, 190, 0.05);
+}
+
+/* 3D Rotator Stage for Character Showcase */
+.rotator-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+}
+
+#skinviewCanvas {
+  outline: none;
+  max-height: 390px;
+  max-width: 100%;
+  cursor: grab;
+  filter: contrast(1.04) brightness(1.02);
+  border-radius: 20px;
+}
+
+#skinviewCanvas:active {
+  cursor: grabbing;
+}
+
+/* Pedestal for 3D character */
+.rotator-pedestal {
+  position: absolute;
+  bottom: 4px;
+  width: 140px;
+  height: 24px;
+  background: radial-gradient(ellipse at center, rgba(160, 140, 225, 0.45) 0%, rgba(160, 140, 225, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Active Thumbnail Card in Left Panel */
+.thumb-card {
+  border: 1.5px solid rgba(185, 169, 230, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+
+.thumb-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--yuki-purple-light);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.thumb-card.active {
+  border: 2px solid var(--yuki-purple-primary);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 234, 255, 0.95) 100%);
+  box-shadow: 0 6px 18px rgba(99, 75, 149, 0.2);
+}
+
+/* Price Item Pill in Right Panel */
+.price-row-pill {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1.5px solid rgba(175, 161, 224, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(99, 75, 149, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.price-row-pill:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--yuki-purple-light);
+  transform: translateX(3px);
+}
+
+.price-row-pill.active {
+  background: rgba(243, 232, 255, 0.95) !important;
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3), 0 4px 12px rgba(99, 75, 149, 0.1) !important;
+  transform: translateX(4px);
+}
+
+/* Commission CTA Button */
+.btn-yuki-order {
+  background: linear-gradient(135deg, #9b81dc 0%, #7054bd 50%, #5d42a8 100%);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 20px rgba(93, 66, 168, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-yuki-order:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(93, 66, 168, 0.4);
+}
+
+/* Category Filter Tab Active */
+.cat-pill {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1.5px solid rgba(175, 161, 224, 0.4);
+  color: var(--yuki-purple-dark);
+  border-radius: 9999px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.cat-pill:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--yuki-purple-light);
+}
+
+.cat-pill.active {
+  background: linear-gradient(135deg, #7c62c4 0%, #634b95 100%);
+  color: #ffffff;
+  border-color: #9f87db;
+  box-shadow: 0 4px 12px rgba(99, 75, 149, 0.25);
+}
+
+/* Minecraft Skin Transparent Checkerboard */
+.skin-checker-lavender {
+  background-color: #f6f3fc;
+  background-image: 
+    linear-gradient(45deg, #e7e2f8 25%, transparent 25%), 
+    linear-gradient(-45deg, #e7e2f8 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #e7e2f8 75%), 
+    linear-gradient(-45deg, transparent 75%, #e7e2f8 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 0 7px, 7px -7px, -7px 0px;
+}
+
+/* Zoom Part Active Button */
+.zoom-part-btn.active {
+  border-color: #634b95 !important;
+  box-shadow: 0 0 14px rgba(99, 75, 149, 0.45), 0 4px 12px rgba(99, 75, 149, 0.15) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Modals */
+.modal-overlay {
+  background: rgba(43, 31, 68, 0.5);
+  backdrop-filter: blur(6px);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(230, 224, 250, 0.4);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb {
+  background: #b1a0db;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8b76bf;
+}
+
+/* ===================================================
+   Home Mockup Components (Yuki Haru Landing Experience)
+   =================================================== */
+
+/* Hero Outer Frosted Frame */
+.home-hero-card {
+  position: relative;
+  border-radius: 28px;
+  border: 1.5px solid rgba(200, 185, 245, 0.7);
+  background: rgba(246, 242, 255, 0.75);
+  box-shadow: 0 12px 35px rgba(99, 75, 149, 0.14), inset 0 1px 2px rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+/* Hero Background Panoramic Art & Slider Track */
+.hero-art-layer,
+.hero-slider-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1024 / 355;
+  min-height: 280px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(100, 80, 150, 0.12);
+}
+
+.hero-slider-track {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.hero-slide-item {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  transition: background-position 0.05s linear;
+}
+
+/* Interactive Banner Drag & Position Editor */
+.banner-position-preview-box {
+  width: 100%;
+  aspect-ratio: 1024 / 355;
+  min-height: 180px;
+  border-radius: 18px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: grab;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 2px rgba(168, 85, 247, 0.4), 0 8px 20px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.banner-position-preview-box:active {
+  cursor: grabbing;
+}
+
+/* Quick Category Pill on Hero Right */
+.hero-quick-pill {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(190, 175, 240, 0.65);
+  color: #3f2e62;
+  box-shadow: 0 4px 14px rgba(90, 70, 140, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-quick-pill:hover {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #7f64be;
+  transform: translateX(-4px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(90, 70, 140, 0.2);
+  color: #241643;
+}
+
+/* Carousel Arrow Button */
+.carousel-arrow-btn {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(195, 180, 240, 0.6);
+  color: #5d4692;
+  border-radius: 9999px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(90, 70, 140, 0.15);
+}
+
+.carousel-arrow-btn:hover {
+  background: #ffffff;
+  color: #382464;
+  transform: scale(1.1);
+  border-color: #8b74c5;
+}
+
+/* Bottom Feature Cards (News, About, Services) */
+.home-feature-card {
+  background: rgba(250, 247, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(195, 180, 240, 0.65);
+  border-radius: 26px;
+  box-shadow: 0 8px 24px rgba(99, 75, 149, 0.1), inset 0 1px 1.5px rgba(255, 255, 255, 0.95);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-feature-card:hover {
+  box-shadow: 0 12px 30px rgba(99, 75, 149, 0.15);
+}
+
+/* News Item Row Pill */
+.news-item-pill {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1.5px solid rgba(195, 180, 240, 0.45);
+  border-radius: 18px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(90, 70, 140, 0.04);
+  cursor: pointer;
+}
+
+.news-item-pill:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #8b74c5;
+  transform: translateX(3px);
+  box-shadow: 0 4px 14px rgba(90, 70, 140, 0.12);
+}
+
+/* Announcement Card (ข้อความประกาศร้าน) */
+.announcement-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(195, 180, 240, 0.55);
+  border-radius: 18px;
+  box-shadow: 0 3px 10px rgba(90, 70, 140, 0.06);
+  transition: all 0.2s ease;
+}
+
+.announcement-card:hover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: #836bbd;
+  box-shadow: 0 6px 18px rgba(90, 70, 140, 0.14);
+}
+
+/* Polaroid Card in About Us */
+.polaroid-card {
+  background: #ffffff;
+  padding: 5px;
+  padding-bottom: 8px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(190, 175, 235, 0.5);
+  box-shadow: 0 8px 20px rgba(90, 70, 140, 0.15);
+  transform: rotate(1.5deg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.polaroid-card:hover {
+  transform: rotate(0deg) scale(1.03);
+  box-shadow: 0 12px 28px rgba(90, 70, 140, 0.22);
+}
+
+/* Service Item Row Pill */
+.service-item-pill {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1.5px solid rgba(195, 180, 240, 0.45);
+  border-radius: 18px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(90, 70, 140, 0.04);
+  cursor: pointer;
+}
+
+.service-item-pill:hover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: #836bbd;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 16px rgba(90, 70, 140, 0.14);
+}
+
+/* Top Navbar Search Input Pill */
+.nav-search-input {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1.5px solid rgba(195, 180, 240, 0.5);
+  color: #372957;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.nav-search-input:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: #7d64bc;
+  box-shadow: 0 0 10px rgba(125, 100, 188, 0.25);
+}
+
+/* View Transition Fade */
+.view-panel {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.view-hidden {
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ========================================================
+   PREMADE SKINS STORE (สกินสำเร็จรูปตามรูป Mockup)
+   ======================================================== */
+.premade-ornate-header {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(243, 238, 255, 0.92) 100%);
+  border: 2px solid rgba(175, 155, 235, 0.7);
+  box-shadow: 0 8px 30px rgba(150, 120, 230, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-radius: 9999px;
+  backdrop-filter: blur(14px);
+}
+
+.premade-ornate-header::before,
+.premade-ornate-header::after {
+  content: "🦋";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(120, 80, 200, 0.3));
+}
+
+.premade-ornate-header::before {
+  left: 14px;
+}
+
+.premade-ornate-header::after {
+  right: 14px;
+}
+
+/* Premade Card (Matching Left Half of Mockup "หน้าก่อนดูงาน") */
+.premade-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 240, 255, 0.92) 100%);
+  border: 2.5px solid rgba(185, 165, 245, 0.8);
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(145, 115, 225, 0.18), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.premade-card:hover {
+  transform: translateY(-7px) scale(1.02);
+  border-color: rgba(155, 125, 235, 1);
+  box-shadow: 0 18px 45px rgba(135, 95, 225, 0.32), 0 0 20px rgba(195, 170, 255, 0.5);
+}
+
+/* Card Corner Ornaments (Butterflies & Crystals) */
+.premade-corner-tl {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 18px;
+  filter: drop-shadow(0 2px 5px rgba(130, 90, 210, 0.35));
+  pointer-events: none;
+  z-index: 10;
+  transition: transform 0.3s ease;
+}
+
+.premade-corner-tr {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 18px;
+  filter: drop-shadow(0 2px 5px rgba(130, 90, 210, 0.35));
+  pointer-events: none;
+  z-index: 10;
+  transition: transform 0.3s ease;
+}
+
+.premade-card:hover .premade-corner-tl {
+  transform: scale(1.2) rotate(-8deg);
+}
+
+.premade-card:hover .premade-corner-tr {
+  transform: scale(1.2) rotate(8deg);
+}
+
+/* Card Silhouette Area */
+.premade-silhouette-box {
+  background: radial-gradient(circle at center, rgba(235, 225, 255, 0.8) 0%, rgba(248, 245, 255, 0.4) 70%);
+  position: relative;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Bottom Price Bar (Matching Mockup with Snowflakes) */
+.premade-price-bar {
+  background: linear-gradient(90deg, rgba(225, 212, 255, 0.95) 0%, rgba(240, 232, 255, 0.98) 50%, rgba(225, 212, 255, 0.95) 100%);
+  border-top: 2px solid rgba(195, 175, 245, 0.75);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Premade Detail Showcase (Matching Right Half of Mockup "ตอนเข้ามาดูงาน") */
+.premade-showcase-frame {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 243, 255, 0.92) 100%);
+  border: 3px solid rgba(175, 150, 245, 0.85);
+  border-radius: 32px;
+  box-shadow: 0 14px 45px rgba(140, 105, 225, 0.22), inset 0 2px 6px rgba(255, 255, 255, 0.9);
+}
+
+.premade-info-frame {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(246, 240, 255, 0.94) 100%);
+  border: 3px solid rgba(175, 150, 245, 0.85);
+  border-radius: 32px;
+  box-shadow: 0 14px 45px rgba(140, 105, 225, 0.22), inset 0 2px 6px rgba(255, 255, 255, 0.9);
+}
+
+/* Payment & Checkout Modal Enhancements */
+.qr-frame-wrapper {
+  background: radial-gradient(circle at center, #ffffff 60%, #f4f0ff 100%);
+  border: 2.5px solid #d8b4fe;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.qr-frame-wrapper:hover {
+  transform: scale(1.02);
+  box-shadow: 0 14px 32px rgba(168, 85, 247, 0.25);
+}
+
+/* Hide download button and PIP menu from video players */
+video::-internal-media-controls-download-button {
+  display: none !important;
+}
+video::-webkit-media-controls-download-button {
+  display: none !important;
+}
+video::-webkit-media-controls-enclosure {
+  overflow: hidden;
+}
+
+/* ===================================================
+   Admin Protection: Hide all admin controls from visitors
+   =================================================== */
+body:not(.is-admin-mode) .admin-only {
+  display: none !important;
+}
+
+/* ===================================================
+   Mobile Navigation & Modal Animations
+   =================================================== */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slideUp {
+  animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-scaleIn {
+  animation: scaleIn 0.22s ease-out forwards;
+}
+
+
+

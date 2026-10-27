@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "format_version": "4.5",
+    "model_format": "figura",
+    "box_uv": true
+  },
+  "name": "snow_butterfly_wings",
+  "geometry_name": "butterfly_wings",
+  "resolution": {
+    "width": 64,
+    "height": 64
+  },
+  "elements": [
+    {
+      "name": "wing_left",
+      "box_uv": true,
+      "from": [0, 0, 2],
+      "to": [8, 12, 3],
+      "origin": [0, 4, 2],
+      "color": 1,
+      "faces": {
+        "north": {"uv": [0, 0, 8, 12], "texture": 0},
+        "east": {"uv": [0, 0, 1, 12], "texture": 0},
+        "south": {"uv": [0, 0, 8, 12], "texture": 0},
+        "west": {"uv": [0, 0, 1, 12], "texture": 0},
+        "up": {"uv": [0, 0, 8, 1], "texture": 0},
+        "down": {"uv": [0, 0, 8, 1], "texture": 0}
+      }
+    },
+    {
+      "name": "wing_right",
+      "box_uv": true,
+      "from": [-8, 0, 2],
+      "to": [0, 12, 3],
+      "origin": [0, 4, 2],
+      "color": 1,
+      "faces": {
+        "north": {"uv": [0, 0, 8, 12], "texture": 0},
+        "east": {"uv": [0, 0, 1, 12], "texture": 0},
+        "south": {"uv": [0, 0, 8, 12], "texture": 0},
+        "west": {"uv": [0, 0, 1, 12], "texture": 0},
+        "up": {"uv": [0, 0, 8, 1], "texture": 0},
+        "down": {"uv": [0, 0, 8, 1], "texture": 0}
+      }
+    }
+  ],
+  "outliner": [
+    {
+      "name": "body",
+      "origin": [0, 0, 0],
+      "children": [0, 1]
+    }
+  ],
+  "animations": [
+    {
+      "name": "wings_flutter",
+      "length": 0.8,
+      "loop": "loop"
+    }
+  ]
+}
