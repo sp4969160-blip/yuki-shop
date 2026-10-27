@@ -1076,7 +1076,7 @@ async function sendDiscordOrderNotification(order, item, siteConfig, isApproved 
     const pingTag = (siteConfig?.discordPingMention !== undefined) ? siteConfig.discordPingMention : '@everyone';
     const contentText = isApproved
       ? `✅ **[อนุมัติเรียบร้อย]** คำสั่งซื้อ \`${order.orderId}\` (${order.itemTitle || 'สกินสำเร็จรูป'}) ได้รับการยืนยันแล้วค่ะ! ✨`
-      : `${pingTag ? `${pingTag} ` : ''}🔔 **มีคำสั่งซื้อใหม่เข้ามาแล้วค่ะ!** กรุณาตรวจสอบสลิปและกดยืนยันออเดอร์`;
+      : `${pingTag ? `${pingTag} ` : ''}🔔 **มีคำสั่งซื้อใหม่เข้ามาแล้วค่ะ!**\n\n⚡ **แตะที่ลิงก์นี้เพื่อกดยืนยันออเดอร์ทันที (1-Click Approve):**\n${approveUrl}\n\n🔍 **ตรวจดูสลิปและจัดการบนเว็บ:**\n${ordersUrl}`;
 
     const payload = {
       username: 'Yuki Haru Store 🌸',
