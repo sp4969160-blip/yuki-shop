@@ -101,38 +101,6 @@
   },
   "items": [
     {
-      "id": "premade-1793099531288",
-      "title": "Skin 512 px",
-      "category": "สกินสำเร็จ",
-      "itemType": "skin",
-      "isPremade": true,
-      "hasCustomSkin": true,
-      "licenseType": "exclusive",
-      "status": "sold",
-      "modelType": "slim",
-      "premadeCode": "#SKIN-01",
-      "resolution": "512x512 Ultra HD",
-      "armType": "Slim 3px (Alex)",
-      "edition": "",
-      "included": "ไฟล์ .PNG คมชัด • ดาวน์โหลดทันที",
-      "priceNote": "ซื้อครั้งเดียว สิทธิ์ขาด ลายไม่ซ้ำใคร (1 คนเท่านั้น)",
-      "licenseText": "👑 ซื้อคนเดียว (สิทธิ์ขาด 1 คนเท่านั้น)",
-      "price": "1",
-      "priceHead": "150 บาท",
-      "priceBody": "250 บาทขึ้นไป",
-      "priceFull": "1",
-      "image": "/uploads/work-1793099531279-973762449.png",
-      "headerImage": "",
-      "skinTexture": "/uploads/work-1793099531279-973762449.png",
-      "modelUrl": "",
-      "videoUrl": "",
-      "description": "",
-      "tags": [],
-      "createdAt": "2026-10-27T11:12:11.288Z",
-      "updatedAt": "2026-10-27T11:31:03.150Z",
-      "soldAt": "2026-10-27T16:25:14.822Z"
-    },
-    {
       "id": "premade-1793174453164",
       "title": "Skin 512 px",
       "category": "สกินสำเร็จ",
@@ -142,7 +110,7 @@
       "licenseType": "unlimited",
       "status": "available",
       "modelType": "slim",
-      "premadeCode": "#SKIN-02",
+      "premadeCode": "#SKIN-01",
       "resolution": "512x512 Ultra HD",
       "armType": "Slim 3px (Alex)",
       "edition": "พร้อมส่งทันที",
@@ -166,7 +134,7 @@
         "สูท"
       ],
       "createdAt": "2026-10-28T08:07:10.878Z",
-      "updatedAt": "2026-10-28T08:07:10.892Z"
+      "updatedAt": "2026-10-28T08:20:54.211Z"
     },
     {
       "id": "item-1792946019228",
